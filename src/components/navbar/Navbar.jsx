@@ -8,6 +8,11 @@ export default function Navbar() {
 
     const { status, data:session } = useSession()
 
+    const handleSignOut = async () => {
+        await signOut(); // Sign out the user
+        sessionStorage.clear(); // Clear session storage
+    };
+
 
     return (
         <div className="bg-white dark:bg-gray-900 fixed w-full z-20 top-0 start-0 border-b border-gray-200 dark:border-gray-600">
@@ -31,7 +36,8 @@ export default function Navbar() {
                             {status === "authenticated" ? (
                                 <div>
                                 <span>{session?.user?.name}</span>
-                                <Link onClick={() => signOut()} href="#" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Sign Out</Link>
+                                <span>{session?.user?.email}</span>
+                                <Link onClick={() => handleSignOut()} href="#" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Sign Out</Link>
                                 </div>
                             ):(
                                 <Link onClick={() => signIn("google")} href="#" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Sign In</Link>

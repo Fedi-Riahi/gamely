@@ -1,19 +1,15 @@
-import mongoose, { Schema, mongo } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const userSchema = new Schema(
     {
-      username: {
-        type: String,
-        required: false, // Make it optional for Google users
-      },
       email: {
         type: String,
         required: true,
-        unique: true, // Ensure email uniqueness
+        unique: true, 
       },
       password: {
         type: String,
-        required: false, // Make it optional for Google users
+        required: true,
       },
     },
     { timestamps: true }
@@ -21,4 +17,4 @@ const userSchema = new Schema(
   
 
 const User = mongoose.models.User || mongoose.model('User', userSchema)
-export default User
+export default User;

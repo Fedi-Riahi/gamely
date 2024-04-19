@@ -1,8 +1,8 @@
 "use client"
 import { useState } from 'react';
+import SignInButton from '../SignInButton/SignInButton';
 
 const Register = () => {
-  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -12,12 +12,12 @@ const Register = () => {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:3000/api/user', {
+      const response = await fetch('/api/user', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ email, password }),
       });
 
       if (!response.ok) {
@@ -37,17 +37,6 @@ const Register = () => {
       <h2 className="text-2xl font-semibold text-gray-800 mb-6">Register</h2>
       <form onSubmit={handleSubmit}>
         {error && <p className="text-red-500 mb-4">{error}</p>}
-        <div className="mb-4">
-          <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username</label>
-          <input
-            type="text"
-            id="username"
-            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
         <div className="mb-4">
           <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
           <input
@@ -76,6 +65,7 @@ const Register = () => {
           </button>
         </div>
       </form>
+      <SignInButton />
     </div>
   );
 };

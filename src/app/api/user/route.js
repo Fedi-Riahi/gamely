@@ -3,7 +3,7 @@ import User from "@/models/user";
 import { NextResponse } from "next/server";
 
 export async function POST(request) {
-  const { username, email, password } = await request.json();
+  const { email, password } = await request.json();
   await connectDatabase();
 
   try {
@@ -14,9 +14,26 @@ export async function POST(request) {
     }
 
     // Create the user
-    await User.create({ username, email, password });
+    await User.create({ email, password });
     return NextResponse.json({ message: "User Registered" }, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: "Registration failed" }, { status: 500 });
+  }
+}
+
+// Define the GET route handler
+export async function GET(request) {
+  // Ensure database connection
+  await connectDatabase();
+
+  try {
+    // Retrieve user data
+    const users = await User.find({}); // Retrieve all users, you can add conditions if needed
+
+    // Return the user data as a JSON response
+    return NextResponse.json({ users }, { status: 200 });
+  } catch (error) {
+    // Return an error response if something goes wrong
+    return NextResponse.json({ error: "Failed to fetch users" }, { status: 500 });
   }
 }
