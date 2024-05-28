@@ -1,176 +1,185 @@
 "use client"
-import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useSession } from "next-auth/react";
 
-const BusinessRegistrationForm = () => {
-
-  const { data: session } = useSession() 
+export default function BusinessRegistrationForm() {
+  const { data: session } = useSession();
   const [formData, setFormData] = useState({
-    userId: '',
-    phone: '',
-    country: '',
-    state: '',
-    city: '',
-    zipCode: '',
-    contactEmail: '',
-    businessEntityType: 'individual',
-    businessName: '',
-    registrationNumber: '',
-    taxNumber: ''
+    userId: "",
+    name: "",
+    address: "",
+    phone: "",
+    businessEntityType: "individual",
+    businessName: "",
+    registrationNumber: "",
+    taxNumber: "",
   });
-  const [sellerUserId, setSellerUserId] = useState('');
 
   useEffect(() => {
-    // Fetch user data from API
-    fetch('/api/user')
-      .then(response => {
+    // Fetch user data from API and set initial user ID if available
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch("/api/user");
         if (!response.ok) {
-          throw new Error('Failed to fetch user data');
+          throw new Error("Failed to fetch user data");
         }
-        return response.json();
-      })
-      .then(data => {
-        // Find user with matching email to session user's email
-        const sessionUserEmail = session?.user?.email
-        const foundUser = data.users.find(user => user.email === sessionUserEmail);
+        const data = await response.json();
+        const sessionUserEmail = session?.user?.email;
+        const foundUser = data.users.find(
+          (user) => user.email === sessionUserEmail
+        );
         if (foundUser) {
-          setSellerUserId(foundUser._id);
-          sessionStorage.setItem('sellerUserId', foundUser._id);
+          setFormData((prevState) => ({ ...prevState, userId: foundUser._id }));
         }
-      })
-      .catch(error => {
-        console.error('Error fetching user data:', error);
-      });
-  }, []);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    if (session) {
+      fetchUserData();
+    }
+  }, [session]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prevState => ({ ...prevState, [name]: value }));
+    setFormData((prevState) => ({ ...prevState, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const sessionUserEmail = session?.user?.email;
-      if (!sessionUserEmail) {
-        throw new Error('Session user email not found');
-      }
-  
-      // Fetch user data from API
-      const response = await fetch('/api/user');
-      if (!response.ok) {
-        throw new Error('Failed to fetch user data');
-      }
-      const data = await response.json();
-  
-      // Find user with matching email
-      const foundUser = data.users.find(user => user.email === sessionUserEmail);
-      if (!foundUser) {
-        throw new Error('User not found');
-      }
-  
-      // Set sellerUserId in session storage
-      const sellerUserId = foundUser._id;
-      sessionStorage.setItem('sellerUserId', sellerUserId);
-      setFormData(prevState => ({ ...prevState, userId: sellerUserId }));
-  
-      // Continue with form submission
-      const formDataWithUserId = { ...formData, userId: sellerUserId };
-      const submissionResponse = await fetch('/api/seller', {
-        method: 'POST',
+      const response = await fetch("/api/seller", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(formDataWithUserId)
+        body: JSON.stringify(formData),
       });
-  
-      if (!submissionResponse.ok) {
-        throw new Error('Failed to register as a seller');
+
+      if (!response.ok) {
+        throw new Error("Failed to register as a seller");
       }
-  
-      const responseData = await submissionResponse.json();
-      console.log('Seller registered successfully:', responseData.seller);
-      // Handle success, maybe redirect to a dashboard or display a success message
+
+      const responseData = await response.json();
+      console.log("Seller registered successfully:", responseData.seller);
+
+      // Set sellerUserId in session storage upon successful registration
+      sessionStorage.setItem("sellerUserId", formData.userId);
+
       // Reset the form data
       setFormData({
-        userId: '',
-        phone: '',
-        country: '',
-        state: '',
-        city: '',
-        zipCode: '',
-        contactEmail: '',
-        businessEntityType: 'individual',
-        businessName: '',
-        registrationNumber: '',
-        taxNumber: ''
+        userId: "",
+        name: "",
+        address: "",
+        phone: "",
+        businessEntityType: "individual",
+        businessName: "",
+        registrationNumber: "",
+        taxNumber: "",
       });
     } catch (error) {
-      console.error('Error registering as a seller:', error);
-      // Handle error, maybe display an error message to the user
+      console.error("Error registering as a seller:", error);
     }
   };
-  
-  
 
   return (
-    <div className='mt-20'>
-      <h1>Business Registration Form</h1>
-      <form onSubmit={handleSubmit}>
-        <input type="hidden" name="userId" value={formData.userId} />
-        <div>
-          <label htmlFor="phone">Phone:</label>
-          <input type="text" id="phone" name="phone" value={formData.phone} onChange={handleChange} required />
-        </div>
-        <div>
-          <label htmlFor="country">Country:</label>
-          <input type="text" id="country" name="country" value={formData.country} onChange={handleChange} required />
-        </div>
-        <div>
-          <label htmlFor="state">State:</label>
-          <input type="text" id="state" name="state" value={formData.state} onChange={handleChange} required />
-        </div>
-        <div>
-          <label htmlFor="city">City:</label>
-          <input type="text" id="city" name="city" value={formData.city} onChange={handleChange} required />
-        </div>
-        <div>
-          <label htmlFor="zipCode">Zip Code:</label>
-          <input type="text" id="zipCode" name="zipCode" value={formData.zipCode} onChange={handleChange} required />
-        </div>
-        <div>
-          <label htmlFor="contactEmail">Contact Email:</label>
-          <input type="email" id="contactEmail" name="contactEmail" value={formData.contactEmail} onChange={handleChange} required />
-        </div>
-        <div>
-          <label htmlFor="businessEntityType">Business Entity Type:</label>
-          <select id="businessEntityType" name="businessEntityType" value={formData.businessEntityType} onChange={handleChange}>
-            <option value="individual">Individual</option>
-            <option value="company">Company</option>
-          </select>
-        </div>
-        {formData.businessEntityType === 'company' && (
-          <div>
-            <label htmlFor="businessName">Company Name:</label>
-            <input type="text" id="businessName" name="businessName" value={formData.businessName} onChange={handleChange} required />
+    <div className="grid place-items-center h-1/2 bg-white w-full">
+      <div className="shadow-lg p-5 rounded-lg border border-gray-400 w-full ">
+        <h1 className="text-xl font-bold my-4">Business Registration</h1>
+        <div className="w-full border border-gray-300 my-8 " />
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col w-full items-center"
+        >
+          <input type="hidden" name="userId" value={formData.userId} />
+
+          <div className="mb-4 w-full">
+            <label htmlFor="name" className="block">
+              Name:
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              className="py-3 px-2 w-full border border-gray-300"
+            />
           </div>
-        )}
-        {formData.businessEntityType === 'company' && (
-          <div>
-            <label htmlFor="registrationNumber">Registration Number:</label>
-            <input type="text" id="registrationNumber" name="registrationNumber" value={formData.registrationNumber} onChange={handleChange} required />
+
+          <div className="mb-4 w-full">
+            <label htmlFor="businessEntityType" className="block">
+              Business Entity Type:
+            </label>
+            <select
+              id="businessEntityType"
+              name="businessEntityType"
+              value={formData.businessEntityType}
+              onChange={handleChange}
+              className="py-3 px-2 w-full border border-gray-300"
+            >
+              <option value="individual">Individual</option>
+              <option value="company">Company</option>
+            </select>
           </div>
-        )}
-        {formData.businessEntityType === 'company' && (
-          <div>
-            <label htmlFor="taxNumber">Tax Number:</label>
-            <input type="text" id="taxNumber" name="taxNumber" value={formData.taxNumber} onChange={handleChange} required />
+
+          {formData.businessEntityType === "company" && (
+            <>
+              <div className="mb-4 w-full">
+                <label htmlFor="registrationNumber" className="block">
+                  Registration Number:
+                </label>
+                <input
+                  type="text"
+                  id="registrationNumber"
+                  name="registrationNumber"
+                  value={formData.registrationNumber}
+                  onChange={handleChange}
+                  required
+                  className="py-3 px-2 w-full border border-gray-300"
+                />
+              </div>
+              <div className="mb-4 w-full">
+                <label htmlFor="taxNumber" className="block">
+                  Tax Number:
+                </label>
+                <input
+                  type="text"
+                  id="taxNumber"
+                  name="taxNumber"
+                  value={formData.taxNumber}
+                  onChange={handleChange}
+                  required
+                  className="py-3 px-2 w-full border border-gray-300"
+                />
+              </div>
+              <div className="mb-4 w-full">
+                <label htmlFor="address" className="block">
+                  Address:
+                </label>
+                <input
+                  type="text"
+                  id="address"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  required
+                  className="py-3 px-2 w-full border border-gray-300"
+                />
+              </div>
+            </>
+          )}
+
+          <div className="flex items-center justify-center w-full my-4">
+            <button className="bg-gradient-to-r from-blue-500 via-blue-600 to-purple-700 hover:from-blue-600 hover:via-blue-700 hover:to-purple-800 text-white font-semibold py-3 px-8 rounded-lg">
+              Register
+            </button>
           </div>
-        )}
-        <button type="submit">Register as Seller</button>
-      </form>
+        </form>
+      </div>
     </div>
   );
-};
-
-export default BusinessRegistrationForm;
+}

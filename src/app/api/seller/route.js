@@ -8,23 +8,19 @@ export async function POST(request) {
     // Extract data from request body
     const {
       userId,
+      name,
       phone,
-      country,
-      state,
-      city,
-      zipCode,
-      contactEmail,
       businessEntityType,
-      businessName,
       registrationNumber,
       taxNumber,
-      listedProducts,
-      forSaleProducts
     } = await request.json();
 
     // Validate required fields
     if (!userId) {
-      return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "User ID is required" },
+        { status: 400 }
+      );
     }
 
     // Connect to the database
@@ -33,28 +29,27 @@ export async function POST(request) {
     // Create a new seller document
     const newSeller = new Seller({
       user_id: userId,
+      name,
       phone,
-      country,
-      state,
-      city,
-      zipCode,
-      contactEmail,
       businessEntityType,
-      businessName,
       registrationNumber,
       taxNumber,
-      listedProducts,
-      forSaleProducts
     });
 
     // Save the seller document
     await newSeller.save();
 
     // Return success response with the newly created seller document
-    return NextResponse.json({ message: "Seller created successfully", seller: newSeller }, { status: 201 });
+    return NextResponse.json(
+      { message: "Seller created successfully", seller: newSeller },
+      { status: 201 }
+    );
   } catch (error) {
     // Return error response if something goes wrong
-    return NextResponse.json({ error: "Failed to create seller", details: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create seller", details: error.message },
+      { status: 500 }
+    );
   }
 }
 
@@ -71,6 +66,9 @@ export async function GET(request) {
     return NextResponse.json({ sellers }, { status: 200 });
   } catch (error) {
     // Return error response if something goes wrong
-    return NextResponse.json({ error: "Failed to fetch sellers", details: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch sellers", details: error.message },
+      { status: 500 }
+    );
   }
 }

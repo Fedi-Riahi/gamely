@@ -2,6 +2,7 @@ import { AuthProvider } from "./provider";
 import "./globals.css";
 import { Inter } from "next/font/google";
 import Navbar from "@/components/navbar/Navbar";
+import GlobalState from "./context/page";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,11 +14,13 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className="mx-auto max-w-screen-4xl bg-white">
-        <AuthProvider>
-          <Navbar />
-          {children}
-        </AuthProvider>
+      <body className="mx-auto max-w-screen-4xl ">
+        <GlobalState>
+          <AuthProvider>
+            <Navbar />
+            {children}
+          </AuthProvider>
+        </GlobalState>
       </body>
     </html>
   );

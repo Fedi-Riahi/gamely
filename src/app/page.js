@@ -1,28 +1,18 @@
-"use client"
-import { useSession } from "next-auth/react";
-import { useEffect } from "react";
+import React from "react";
+import Hero from "@/components/hero/Hero";
+import FeaturedProducts from "@/components/featuredProducts/FeaturedProducts";
+import FeaturedProduct from "@/components/featuredProduct/FeaturedProduct";
+import BestDeals from "@/components/bestDeals/BestDeals";
+import Newsletter from "@/components/newsLetter/NewsLetter";
 
 export default function Home() {
-  const { status , data: session } = useSession()
-  console.log("Session:", session);
-
-  useEffect(() => {
-    // Log the user's email if authenticated and session is available
-    if (status === "authenticated" && session) {
-      console.log("User Email:", session?.user?.password);
-      console.log("Session:", session);
-
-    }
-  }, [status, session]);
-
   return (
-    <main className="flex flex-col justify-center items-center mt-20">
-      <h3>Gamely</h3>
-      { status === "authenticated" ? (
-        <span>{session?.user?.password}</span>
-      ) : (
-        <span>Not Authenticated</span>
-      )}
+    <main className="bg-black">
+      <Hero />
+      <FeaturedProducts />
+      <BestDeals />
+      <Newsletter />
+      <FeaturedProduct />
     </main>
   );
 }
