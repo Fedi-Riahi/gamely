@@ -47,11 +47,13 @@ export async function PUT(request, { params }) {
       state,
       city,
       zipCode,
-      wishlist,
+      wishlist: newWishlist
     } = requestData;
 
     // Ensure database connection
     await connectDatabase();
+    // Merge the existing wishlist with the new wishlist items, avoiding duplicates
+    const mergedWishlist = Array.from(new Set([...user.wishlist, ...newWishlist]));
 
     // Find the user by ID and update its properties
     const updatedUser = await User.findByIdAndUpdate(
@@ -66,7 +68,7 @@ export async function PUT(request, { params }) {
         state,
         city,
         zipCode,
-        wishlist,
+        wishlist: mergedWishlist
       },
       { new: true }
     );

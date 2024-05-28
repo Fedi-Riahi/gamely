@@ -101,7 +101,7 @@ const Listings = () => {
             className=" w-full flex items-center justify-center flex-col mb-40"
             id="listings-container"
           >
-            <div className="grid md:grid-cols-4 grid-cols-1 gap-5 w-full">
+            <div className="grid md:grid-cols-3 grid-cols-1 gap-5 w-full">
               {listings.slice(0, displayedListings).map((listing) => (
                 <ProductCard listing={listing} key={listing._id} />
               ))}

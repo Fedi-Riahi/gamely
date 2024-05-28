@@ -174,7 +174,7 @@ export default function BusinessRegistrationForm() {
           )}
 
           <div className="flex items-center justify-center w-full my-4">
-            <button className="bg-gradient-to-r from-blue-500 via-blue-600 to-purple-700 hover:from-blue-600 hover:via-blue-700 hover:to-purple-800 text-white font-semibold py-3 px-8 rounded-lg">
+            <button className="mt-4 bg-gradient-to-r from-blue-500 via-blue-600 to-purple-700 hover:from-blue-600 hover:via-blue-700 hover:to-purple-800 text-white font-semibold py-3 px-8 rounded-tl-lg rounded-br-lg">
               Register
             </button>
           </div>

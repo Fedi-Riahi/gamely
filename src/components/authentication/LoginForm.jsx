@@ -45,7 +45,7 @@ export default function LoginForm() {
               console.log("Seller data:", sellerData);
 
               const isSeller = sellerData.sellers.some(
-                (seller) => seller.userId === userWithEmail._id
+                (seller) => seller.user_id === userWithEmail._id
               );
               if (isSeller) {
                 sessionStorage.setItem("sellerUserId", userWithEmail._id);

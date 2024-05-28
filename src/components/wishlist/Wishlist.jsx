@@ -27,7 +27,7 @@ const Wishlist = () => {
       const userData = await fetchUserData(userId);
       if (!userData) return;
 
-      const productIds = userData.user.productsWishlist;
+      const productIds = userData.user.wishlist;
       const productsData = await fetchProductsData(productIds);
       if (!productsData) return;
 
@@ -84,7 +84,7 @@ const Wishlist = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          productsWishlist: updatedWishlist.map((product) => product._id),
+          wishlist: updatedWishlist.map((product) => product._id),
         }),
       });
 
